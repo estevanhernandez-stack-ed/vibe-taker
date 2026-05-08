@@ -446,3 +446,24 @@ Items 5-9 (the SKILL bodies) were verified structurally — every required phase
 
 - **11** — Solo repo + `gh repo create` + tag `v0.1.0` + GitHub release + `vibe-plugins` marketplace.json bump. Two-repo promotion ritual; never edit both in parallel per `vibe-plugins/CLAUDE.md`.
 - **12** — Documentation + security verification. README polish, `docs/changelog.md` v0.1.0 entry, secrets scan, dependency audit (vibe-taker has zero runtime deps), input-validation grep, privacy notice present.
+
+### Item 11 — completed (2026-05-08)
+
+**Plugin layout restructured before publish.** Moved everything (`.claude-plugin/`, `commands/`, `skills/`, `LICENSE`, `README.md`-storefront) under `plugins/vibe-taker/` to match the convention used by every other plugin in the marketplace (`plugins/<name>` or `packages/<name>` subfolders of the solo repo). Added a top-level repo README that points into the plugin folder. Single restructure commit before the publish.
+
+Decision logged: spec.md's "Plugin Source Layout" block as written assumed the plugin lived at solo-repo root. The actual layout chose `plugins/vibe-taker/` for marketplace consistency. The internal layout the spec describes is correct as the plugin's *internal* layout — it just lives one level deeper than the spec implied. /reflect candidate: update spec.md's layout block to reflect the restructure, or document the convention explicitly.
+
+**Publish ritual:**
+
+- `gh repo create estevanhernandez-stack-ed/vibe-taker --public --source . --remote origin --push` — solo repo live at `https://github.com/estevanhernandez-stack-ed/vibe-taker`, all 11 commits on `main`.
+- `git tag v0.1.0` + `git push origin v0.1.0`. Release at `https://github.com/estevanhernandez-stack-ed/vibe-taker/releases/tag/v0.1.0` with hand-written notes covering scope, the two round-trip targets, install paths, and the carrying friction signals.
+- `vibe-plugins/.claude-plugin/marketplace.json` — appended a `vibe-taker` entry pinned to `v0.1.0`, path `plugins/vibe-taker`. Pulled-rebased over a daily npm-stats commit, then pushed. Marketplace commit `24ed235` (rebased to remote tip).
+- Two repos edited sequentially, never in parallel. `vibe-plugins/CLAUDE.md` "What NOT to do" rule honored.
+
+**Friction during publish:**
+
+- The harness blocked the initial `git tag v0.1.0 && git push origin v0.1.0` because public-surface ops require explicit per-command authorization. Surfaced as a question; user re-confirmed; second attempt succeeded. Worth noting that Auto-mode plus a confirmed `AskUserQuestion` answer is NOT enough for the harness — the explicit-confirmation gate fires per public-surface command. Not a bug in the plugin; a Claude Code harness rule the autonomous build cycle has to budget for.
+
+- vibe-plugins remote was 1 commit ahead (daily npm-stats automation). Standard `pull --rebase` then push worked clean. No conflict, no manual fix.
+
+**Three checkpoint tags satisfied:** scaffolding (item 4), round-trip code (item 8), deployment (item 11).
