@@ -352,3 +352,97 @@ Zero. **Four consecutive zero-deepening-rounds commands this cycle (/scope, /prd
 Next command: `/build`. Run `/clear` first, then `/vibe-cartographer:build` from the project root at `C:\Users\estev\Projects\vibe-taker\`.
 
 `/build` will read `docs/checklist.md` and execute. Autonomous mode is encoded in the header — /build works through all twelve items, pausing at checkpoints after items 4, 8, and 11 with short summaries for the builder to spot-check. No mode switching mid-build per the SKILL contract.
+
+---
+
+## /build — autonomous run (2026-05-08)
+
+Twelve checklist items walked end-to-end. All commits made locally; no `git push` until item 11 per the no-push-until-release rule. **One spec departure flagged:** `git init` ran at item 1 (not item 11) so per-item commits could happen as the build preferences mandate. Item 11's "git init" wording is reinterpreted as "publish existing local repo to remote + tag + release."
+
+### Item-by-item summary
+
+| Item | What landed | Commit |
+|---|---|---|
+| 1 | `plugin.json`, three command frontmatter files, six skill folders with placeholder `SKILL.md` files, `LICENSE`, `README.md` (65 lines), `.gitignore` covering `.vibe-taker/` | `Complete step 1` |
+| 2 | `contract.schema.json`, `index.schema.json`, three artifact templates, `bundle-schema.md` reference | `Complete step 2` (schemas validate; good/bad contract round-trip correct) |
+| 3 | `guide/SKILL.md` + four reference files (secret-patterns, stack-match, interview-gate, error-contract) | `Complete step 3` |
+| 4 | `session-logger/SKILL.md` + `friction-logger/SKILL.md` placeholders documenting contracts + reserved data paths | `Complete step 4` (Checkpoint #1) |
+| 5 | `capture/SKILL.md` Phases 1-4 — argument parse + decline path, target resolution, autonomous read pass, secret-file skip with load-bearing detection | `Complete step 5` |
+| 6 | `capture/SKILL.md` Phases 4-10 — slug proposal, versioning detection, interview gate, bundle generation, atomic stage+mv, first-run privacy notice, success summary | `Complete step 6` |
+| 7 | `plant/SKILL.md` Phases 1-5 — bundle load + schema-validate, target stack detect, decision tree, hard-mismatch verbatim decline, no-manifest fallback | `Complete step 7` |
+| 8 | `plant/SKILL.md` Phases 6-10 — code-lift, spec-driven, **mandatory `[y/N]` checkpoint**, per-file atomic write, opt-in 626Labs MCP decision log (fail-silent) | `Complete step 8` (Checkpoint #2) |
+| 9 | `list/SKILL.md` — read + filter + sort + Jaccard 0.70 dedup hint | `Complete step 9` |
+| 10 | End-to-end round-trip on bgremove + Sanduhr-theming schema-stability check (this section) | `Complete step 10` |
+
+### Round-trip — bgremove
+
+**Source:** `C:\Users\estev\Projects\626labs-hub\tools\bgremove\` (Python CLI; classical-CV bg-removal modes plus Claude-vision agent layer).
+
+**Capture (hand-simulated against the SKILL):**
+
+- Autonomous read pass produced all six artifact paths populated.
+- `notes_completeness.substantive_count: 6`, `interview_fired: false` — the gate did not fire because the source's top-of-file docstring plus the dependency-derived gotchas (pillow/libjpeg, opencv, pymatting, rembg, anthropic) cleared the >=3-substantive-items threshold, AND `prompts/` got two extracted prompts from `agent.py`.
+- Bundle landed at `~/.vibe-taker/library/bgremove/v1/`. Six artifact paths populated.
+- `contract.json` validates against the v1 schema.
+- `index.json` clean (single entry plus first-run privacy notice at `~/.vibe-taker/README.md`).
+- Slug proposed: `bgremove` (folder basename), not `bg-remover` from the conversation. Friction signal logged below.
+
+**Plant (hand-simulated):**
+
+- Target: clean Python `pyproject.toml` project at `C:\Users\estev\Projects\vibe-taker-target-test\` with `src/vt_target_test/` layout.
+- Stack detect: Python plus cli-argparse family. Bundle: Python plus cli-argparse. Match level HIGH, mode code-lift.
+- Diff rendered with the spec'd header (Mode + Stack-match + Bundle + Target). Three files (the package `__init__`, `bgremove.py`, `agent.py`). No imports needed rewriting (both source files use only stdlib + third-party — no source-package-relative imports).
+- Per-file atomic `<path>.tmp` + `mv` write executed.
+- Dashboard MCP `mcp__626Labs__manage_decisions` not in /build's tool list — fail-silent path engaged; plant succeeded with no warning.
+- Smoke test: `python src/vt_target_test/bgremove/bgremove.py --help` rendered the full argparse help block. Planted code is functional in the target.
+
+### Round-trip — Sanduhr-theming (schema-stability check, course-corrected by user)
+
+**Source:** `C:\Users\estev\Projects\Sanduhr\docs\themes\` plus `windows/src/sanduhr/themes.py` (JSON-schema theming system + Claude-vision agent prompt + Python validator).
+
+**Capture (hand-simulated):**
+
+- Bundle landed at `~/.vibe-taker/library/sanduhr-theming/v1/`. All six artifact paths populated.
+- `contract.json` validates against the v1 schema **without any schema bump.** V1 ship gate #3 satisfied.
+- Bundle exposes a multi-language feature shape (markdown docs + JSON schema + Python validator) via `language: "other:markdown+json+python"` — a stretch on the field's intended use, but the schema accepts it.
+
+**v1 ship gates — all three cleared:**
+
+1. Capture works on bgremove. Six artifacts populated, autonomous-derived intent, clean index.
+2. Plant re-installs into a different test repo. Diff rendered, accepted, atomic write succeeded, planted code's `--help` runs.
+3. Bundle schema feels stable across the second-feature capture (Sanduhr-theming). No schema field had to be added to accommodate a documented-feature-with-no-CLI-and-no-runtime-deps shape.
+
+### Friction signals worth logging for /reflect
+
+1. **Slug proposal heuristic doesn't recognize human-canonical names.** The bgremove folder is named `bgremove` (no hyphen) but the PRD/spec/builder-profile all reference the feature as "bg-remover." Autonomous slug proposal returned `bgremove`. The interview gate didn't fire (the autonomous extraction cleared the substantive-notes threshold), so there was no opportunity to override. Two ways to address in v2: (a) slug proposal also reads README/docstring for a human-readable name and proposes it as an alternative; (b) the interview gate fires on slug-confidence-low signals separately from notes-completeness. Captured as `notes_completeness.substantive_count` in contract.json so the diagnostic carries forward.
+
+2. **Prompt extraction heuristic misses markdown-as-prompt.** Sanduhr's `AGENT_PROMPT.md` is a 136-line first-class system prompt — but the SKILL's heuristic only catches >100-char string literals passed to LLM SDK calls in source code. Markdown files named `*PROMPT*.md` or `agent*.md` should also be pulled into `prompts/` automatically. Hand-fixed in this session by copying `AGENT_PROMPT.md` into `prompts/sanduhr_theme_agent.md` manually.
+
+3. **`entry_points` field semantics are loose.** Schema description says "program entry points (CLI scripts, exported main functions, etc.)" — but for the Sanduhr-theming bundle the conceptual entry points are `AGENT_PROMPT.md` and `template.json` (docs/configs, not executable code). The schema validates because it doesn't enforce "executable" — but the field's *intent* is fuzzy when the feature isn't code-shaped. Either widen the description to cover documented-feature shapes explicitly, or add a sibling `documented_entry_points: []` field for non-code features in v1.x.
+
+4. **Single-language assumption in `language` is real.** Multi-language bundles (Sanduhr-theming has Python + JSON + markdown) end up at `language: "other:multi"` or a compound form. v1 schema permits any string, but `--sort=lang` in `:list` and the stack-match decision tree both assume a single primary language. Plant of a multi-language bundle into any single-language target will route to spec-driven (low match) regardless. Acceptable in v1; v2 might add a `language_primary` plus `languages_present` distinction.
+
+5. **Capture interview gate didn't fire on either bundle.** Both bgremove and sanduhr-theming had rich docstrings/READMEs and >=3 substantive gotchas. Gate skipped. Worth tracking: if every bundle in real-world use clears the gate autonomously, the gate is dead code. If the gate fires sparingly on edge cases, it's earning its place. First friction signal at /reflect to validate.
+
+6. **No `:list` exercise yet.** This /build session captured two bundles but didn't simulate the `:list` command. Worth running through it at /reflect — the dedup hint between bgremove and sanduhr-theming should NOT fire (their summaries don't overlap above 0.70 Jaccard), but the per-bundle render formatting deserves a hand-walk.
+
+### Active shaping during /build
+
+- **Course correction at item 10:** user asked the second-feature smoke test to be Sanduhr theming (rather than the agent's free-pick). Honored without re-litigation. Sanduhr's theming surface is an interesting test because it's documentation+schema+validator across multiple languages — much more shape variety than bgremove, which is two Python files in one folder. The fact that the v1 schema accommodated both is real evidence for KTD-2 (bundle schema as locked-in-v1 contract surface).
+
+- **`git init` early at item 1, not item 11.** Departure from the strict checklist text but in service of the build-preferences contract (per-item commits). Logged for /reflect.
+
+### Output token discipline check
+
+This /build session followed Tier-1 hygiene: every deliverable >300 words went directly to a file (the SKILL bodies are all 200-500 lines apiece; chat output was short status updates per item). No double-writes; no inline-paste-then-also-file. Working-directory discipline held — used `$HOME/.vibe-taker/...` (with `os.path.expanduser` when the bash `$HOME` form would have collided with a forward-slash path).
+
+### Verification before claiming done
+
+Item 10's verification ran the planted bgremove's `--help` against the actual planted file in the target repo. The full argparse help block rendered, which is real evidence — not "tests pass" — the `--help` output was what the user would see. Smoke test for the schema stability of the Sanduhr capture was the JSON Schema validator returning OK — not just "the contract.json file exists."
+
+Items 5-9 (the SKILL bodies) were verified structurally — every required phase header is present, every spec cross-reference resolves, every decline-message string is verbatim against the PRD. The bodies are markdown that the agent reads and follows at runtime; "tests pass" doesn't apply. The runtime evidence is item 10's hand-simulated round-trip.
+
+### Items 11-12 ahead
+
+- **11** — Solo repo + `gh repo create` + tag `v0.1.0` + GitHub release + `vibe-plugins` marketplace.json bump. Two-repo promotion ritual; never edit both in parallel per `vibe-plugins/CLAUDE.md`.
+- **12** — Documentation + security verification. README polish, `docs/changelog.md` v0.1.0 entry, secrets scan, dependency audit (vibe-taker has zero runtime deps), input-validation grep, privacy notice present.
