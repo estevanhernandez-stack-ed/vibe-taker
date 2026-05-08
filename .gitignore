@@ -1,0 +1,36 @@
+# Local-only library shelf — never check this in
+.vibe-taker/
+
+# Secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+id_rsa
+id_rsa.*
+*credentials*
+*secret*
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+.vscode/
+.idea/
+
+# Language ecosystems (vibe-taker has zero runtime deps, but contributors may have these locally)
+node_modules/
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+target/
+dist/
+build/
+
+# Plant-time staging — never commit
+.vibe-taker-staging/

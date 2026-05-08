@@ -1,0 +1,17 @@
+{
+  "name": "vibe-taker",
+  "version": "0.1.0",
+  "description": "Take it with you. Capture a feature out of one repo as a portable bundle; plant it into another and adapt to the destination stack.",
+  "author": "Estevan Hernandez <estevan.hernandez@gmail.com>",
+  "homepage": "https://github.com/estevanhernandez-stack-ed/vibe-taker",
+  "repository": "https://github.com/estevanhernandez-stack-ed/vibe-taker",
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "plugin",
+    "feature-capture",
+    "cross-repo",
+    "bundle",
+    "vibe-coding"
+  ]
+}
