@@ -467,3 +467,49 @@ Decision logged: spec.md's "Plugin Source Layout" block as written assumed the p
 - vibe-plugins remote was 1 commit ahead (daily npm-stats automation). Standard `pull --rebase` then push worked clean. No conflict, no manual fix.
 
 **Three checkpoint tags satisfied:** scaffolding (item 4), round-trip code (item 8), deployment (item 11).
+
+---
+
+## /reflect — autonomous run (2026-05-08)
+
+Peer-style retro. Two parts: 4-question conversational check-in (Part A), 5-dimension qualitative review (Part B), 2 reflection questions, profile + reflection-doc writes.
+
+### Part A — what the builder said
+
+1. **Most load-bearing artifact.** *"That was the plan and how I have been using vibe cartographer for a bit. I will iterate the spec with an agent and prep it for build and use Vibe Cartographer to wrap everything up for the build process."* — first-person confirms what process-notes already showed: spec is load-bearing, /scope and /prd are mostly translation, /checklist is the build runbook, Cart's value lands at /checklist + /build.
+2. **Pushback moments.** *"Not with this one. I pushed back during the vibe-iterate process with another agent when it told me that might not be the right move for that repo."* — pushback muscle is active in the practice, deployed elsewhere this cycle. The 2-of-12 course-correction rate this cycle is calibrated trust, not deference.
+3. **What the workflow caught vs missed.** *"I didn't catch anything"* — clean cycle from the builder's seat. Agent's misses (slug heuristic gap; interview gate didn't fire on either round-trip target) all carried forward to /evolve via docs/reflection.md.
+4. **Hindsight on yourself.** *"Yeah, nothing. I think If I lost my builder profile I could build it back up pretty equally to where it is now because the tools are directing the flow of things."* — the workflow is durable-to-profile-loss. Tools shape the flow; the flow rebuilds the profile.
+
+### Part B — review summary
+
+Five dimensions covered in `docs/reflection.md` with concrete-evidence citations. Strengths: anchor sentence survived to marketplace storefront copy; verbatim-string acceptance criteria carried into shipped SKILL bodies with zero drift; eight named KTDs each with Decision/Why/Tradeoff; bundle schema's spare capacity absorbed both round-trip targets without a bump; calibrated trust pattern. Tightenings: scope didn't name slug-canonical-name divergence; PRD didn't surface markdown-as-prompt as an OQ; KTD-1 didn't coordinate with marketplace path convention; spec back-merge at item 11 didn't fire; process-notes friction signals lacked uniform "carry to" target.
+
+### Goals reflection
+
+Builder: *"I feel great about it. I look forward to trying it on some deeply integrated pieces."* — deeply-integrated multi-file features are where the bundle schema's spare capacity actually earns its keep, and where v1's conservative stack-match thresholds will get tested for real.
+
+### Calibration check-in
+
+**Skipped.** No `friction.jsonl` entries from this project's session window — the cart plugin's friction-logger pipeline (`node scripts/atomic-append-jsonl.js`) didn't fire visibly during /build (autonomous chain ran without surfacing friction-logger invocations). Six friction signals were captured directly in `process-notes.md` and `docs/changelog.md` instead, and carried to /evolve via the "Carrying to /evolve" section of `docs/reflection.md`. This is acceptable per the SKILL's defensive default (no entries match → silently skip).
+
+### Updated unified builder profile
+
+Cross-plugin profile at `~/.claude/profiles/builder.json` updated:
+- `last_updated` (top level) → 2026-05-08T00:00-05:00.
+- `plugins.vibe-cartographer.last_updated` → 2026-05-08T00:00-05:00.
+- `plugins.vibe-cartographer.projects_completed` → **15** (was 14). Note appended naming the cycle outcome.
+- `plugins.vibe-cartographer.last_project` → rewritten from "started" to "completed" framing, naming the canary+stable same-day ship, the two test cases, and the six friction signals.
+- `plugins.vibe-cartographer.notes` → appended five new patterns load-bearing for future Cart cycles: (mm) spec-prep-upstream-then-Cart-wraps-up first-person confirmed; (nn) tools-direct-the-flow-profile-is-recoverable; (oo) auto-mode + AskUserQuestion does NOT satisfy harness's public-surface gate; (pp) KTDs touching deployment shape need marketplace-neighbor-consistency check; (qq) spec back-merge during /build needs to be its own checklist hygiene step.
+- Did NOT touch `shared.*` — no genuinely-new cross-plugin observations from this cycle (tone, pacing, communication-style all consistent with prior fresh values).
+- Did NOT touch identity, technical_experience, or creative_sensibility — those live in onboard's territory.
+
+### Artifacts shipped from this /reflect
+
+- `docs/reflection.md` — shareable retro doc with Part B observations + Part A excerpts + Carrying-to-/evolve list.
+- Updated `~/.claude/profiles/builder.json` (cross-plugin profile).
+- This process-notes section.
+
+### Closing
+
+Full cycle. scope → requirements → spec → plan → build → review. Process worked on a marketplace plugin at v0.1.0 scale. Documents in `docs/` ship alongside the code as proof of how it was thought through.
