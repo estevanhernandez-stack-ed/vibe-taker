@@ -135,13 +135,200 @@ Target: <target.language or "no manifest">/<target.framework or "—">
 
 This is what the user reads before answering the `[y/N]` prompt.
 
-## Phase boundary — items 7/8
+## Phase 6 — code-lift mode
 
-Phases 1-5 land at one of:
+Triggered when `mode == "code-lift"` (high match).
 
-- **Class-1 decline** (hard mismatch) — exit clean, no further work.
-- **Header printed** with `mode`, `match_level`, ready for code-lift or spec-driven generation in Phase 6 (item 8).
+### 6.1 Target-conventional placement
 
-Item 8 picks up at Phase 6 and runs through the diff render, the mandatory `[y/N]` checkpoint, the per-file atomic write, and the dashboard decision-log integration.
+Determine where files land in the target. Follow the target's existing convention:
 
-<!-- ITEM 7 BOUNDARY — phases below land in item 8. -->
+- **Python with `pyproject.toml` + a `src/<package>/` layout** → place files under `src/<package>/<feature>/`. Read `<package>` from `[project].name` (PEP 621) or `[tool.poetry].name` (Poetry).
+- **Python with `pyproject.toml` + flat layout** (no `src/`) → place files under `<package>/<feature>/`.
+- **Python with only `requirements.txt`** (no `pyproject.toml`) → place files at root with `<feature>/` subdir.
+- **Node with `src/`** → `src/<feature>/`.
+- **Node without `src/`** → `<feature>/` at root.
+- **Rust** → `src/<feature>/` (always `src/` in Cargo crates).
+- **Go** → `<feature>/` package at root or under `internal/<feature>/` if `internal/` exists.
+- **C#** → `<Feature>/` (PascalCase) folder under the `.csproj` directory.
+- **Default fallback** → `<feature>/` at root.
+
+`<feature>` is the bundle's slug (`contract.name`). For single-file bundles where the entire feature is one file, place that file at `<feature>.<ext>` rather than under a folder.
+
+### 6.2 Import rewriting
+
+Walk every `.py` / `.ts` / `.tsx` / `.js` / `.jsx` / `.rs` / `.go` file being placed.
+
+**Python:**
+
+- `from .` and `from <source-package>.<...>` → rewrite to target package.
+  - Source package is whatever was the source's top-level package name (read from the bundle's `reference/<src-tree>/pyproject.toml` if captured; else infer from `entry_points`).
+  - Target package is from `[project].name` / `[tool.poetry].name` of the target's `pyproject.toml`.
+- Relative imports stay relative; absolute-from-package imports get the package name swapped.
+
+**Node:**
+
+- `import './<rel>'` and `import '../<rel>'` — keep relative (path is preserved by the tree placement).
+- `import 'src/<...>'` or `import '@<alias>/<...>'` — adjust to target's `tsconfig.json#paths` if present, else rewrite to a target-relative form.
+- `require('<source-pkg>/<...>')` for the source's own package name → target package name.
+
+**Rust:**
+
+- `crate::` references stay (crate-relative). `use <source-crate>::<...>` rewrites to target crate.
+
+**Go:**
+
+- Module imports `<source-mod>/<...>` rewrite to `<target-mod>/<...>` from `go.mod`'s `module` line.
+
+**Adapter coverage:** v1 ships **zero** in-language framework adapters (no Click→Typer, no Express→Fastify, etc.). When a framework call site doesn't translate cleanly inside the same family, fall back to **spec-driven mode for that file specifically** — render the file as a fresh re-implementation rather than a literal copy. Per-file fallback keeps the rest of the code-lift intact.
+
+### 6.3 Stage the diff
+
+Build a unified diff against the target's current state:
+
+- Each file to be created → `+++` block with full content.
+- Each file to be modified (rare in v1; primarily import-rewrite of an already-named target file) → diff against current.
+
+Stage in memory or in a session-only `.vibe-taker-staging/` directory under cwd. **Do not commit** the staging directory; `.gitignore` covers it.
+
+Continue to Phase 8 (diff render + confirm).
+
+## Phase 7 — spec-driven mode
+
+Triggered when `mode == "spec-driven"` (low match or fallback).
+
+1. **Read** `<bundle>/architecture.md` — components, data flow, key files.
+2. **Read** `<bundle>/contract.json` — exact I/O surface to match in the target.
+3. **Read** `<bundle>/notes.md` — why and gotchas; preserve tradeoffs in the target.
+4. **Read** `<bundle>/reference/` files — for shape and intent, **as a guide, not a copy source**. Don't lift literal code; re-derive in the target's framework conventions.
+5. **Generate** fresh code in the target's stack. Preserve:
+   - Same input names + types from `contract.inputs`.
+   - Same output names + types from `contract.outputs`.
+   - Same env-var names from `contract.env_vars` (rename target-side conventions if any apply).
+   - Same external-service touchpoints (LLM SDK calls, file I/O, CLI flags).
+6. **Place** generated files using the same target-conventional placement rules as Phase 6.1.
+7. **Stage** the diff (Phase 6.3 mechanics — fresh files, no rewrites needed).
+
+Continue to Phase 8.
+
+## Phase 8 — diff render + mandatory `[y/N]` checkpoint
+
+The single mandatory user-confirmation point. PRD Plant story 1: *"No file is written without explicit user confirmation."* No `--yes` flag in v1 (KTD-7).
+
+### 8.1 Render
+
+Print the unified diff to stdout. Format:
+
+```
+Mode: <code-lift | spec-driven>
+Stack match: <high | low | fallback>
+Bundle: <name> <version>  ·  source: <contract.language>/<contract.framework or none>
+Target: <target.language>/<target.framework or "—"> at <cwd>
+
+--- Files to be written ---
+(<N> files; <total-bytes> bytes)
+
+<unified diff per file, in dependency-friendly order: contracts/types first, entry points last>
+
+--- Env vars from bundle (provide before running) ---
+<list of contract.env_vars with load_bearing flag>
+
+--- Notes carried from bundle ---
+<bundle's notes.md > Gotchas section, verbatim>
+```
+
+Make it scannable. Long diffs are fine; the user is making a binary decision but should have the full picture.
+
+### 8.2 Prompt
+
+Print on its own line:
+
+```
+Apply this diff? [y/N]
+```
+
+### 8.3 Decline path
+
+On `n`, empty input, or any non-`y` answer:
+
+- **No file is written.**
+- Print:
+
+  ```
+  No files written.
+  ```
+
+- Clean up `.vibe-taker-staging/` if it was used.
+- Exit class-0 (the user declined cleanly; this is success, not failure).
+
+### 8.4 Apply path
+
+On `y`:
+
+1. **Per-file atomic write.** For each file in the diff:
+   - Write to `<target-path>.tmp`.
+   - On all writes succeeding, `mv <target-path>.tmp <target-path>`.
+   - If any write fails mid-flight, roll back any `.tmp` files already written (delete them) and exit class-2 with the failed path.
+2. **Clean up** any `.vibe-taker-staging/` directory under cwd.
+3. **Print** the success summary (Phase 10).
+
+### 8.5 Atomic-per-file rationale
+
+Per-file `.tmp` + `mv` makes each individual write atomic on POSIX (and on Windows with NTFS for same-volume moves). The whole-plant operation is **not** atomic — it's a sequence of per-file atomic moves. If something dies between file 3 and file 4, files 1-3 are landed and 4-N aren't. This is acceptable in v1: the `[y/N]` confirmation already gives the user the full picture; mid-flight crashes are vanishingly rare for filesystem ops; and a partial plant is still partial *valid* code (each file individually is consistent).
+
+## Phase 9 — dashboard decision log (opt-in / fail-silent)
+
+PRD Plant story 5. Pattern #13 (ecosystem-aware composition).
+
+After a successful apply (Phase 8.4):
+
+1. **Check** whether `mcp__626Labs__manage_decisions` is in the agent's runtime tool list.
+2. **If absent** — succeed silently. No retry, no error, no warning. The plant is already a success.
+3. **If present** — call:
+
+   ```
+   action: log
+   body:
+     title: "Planted <name> <version> into <cwd-basename>"
+     description: |
+       Source: <contract.source_repo> (<contract.source_path>)
+       Target: <cwd>
+       Mode: <code-lift | spec-driven>
+       Stack match: <high | low | fallback>
+     tags: ["vibe-taker", "plant", "<contract.language>"]
+     projectId: <bound-project-id-if-current-repo-bound-else-null>
+   ```
+
+   - To get `bound-project-id`: read `git config --get remote.origin.url` from cwd; if a remote exists, optionally call `mcp__626Labs__manage_projects` with action `findByRepo` to get the project ID. If no remote or no match, set `projectId: null` and tag the decision with the cwd basename.
+   - **Don't fail the plant on dashboard errors.** If the call returns an error, print one line: `(dashboard log failed; plant succeeded)` and exit class-0 anyway.
+
+## Phase 10 — success summary
+
+Class-0 outcome after a `y` on the diff.
+
+```
+✓ Planted <name> <version> into <cwd>
+
+  <N> files written.
+  Mode: <code-lift | spec-driven>  ·  Stack match: <high | low | fallback>
+
+  Env vars to set before running:
+    <list of load-bearing env vars from contract>
+
+  Source: <contract.source_repo> (<contract.source_path>)
+
+  <(dashboard log succeeded | plant logged to 626Labs Dashboard | dashboard not connected)>
+```
+
+Exit class-0.
+
+## Failure modes recap
+
+All exits include a one-line recovery action per [`error-contract.md`](../guide/references/error-contract.md):
+
+- Bundle not on shelf / version not found / hard mismatch / user declined → class-1 / class-0 with the recovery line.
+- Schema-invalid contract / write failure mid-flight / index-corrupt → class-2 with the path.
+- Successful plant (code-lift or spec-driven) with user `y` → class-0 with the summary above.
+- Successful decline (user `n`) → class-0; "no files written."
+
+The diff is the load-bearing checkpoint. Until the user types `y`, **no file in cwd is touched.**
