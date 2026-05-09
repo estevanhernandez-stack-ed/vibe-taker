@@ -2,6 +2,16 @@
 
 vibe-taker follows the [vibe-plugins](https://github.com/estevanhernandez-stack-ed/vibe-plugins) tag scheme: plain `vX.Y.Z` (matches Cart, Doc, Thesis Engine).
 
+## v0.1.1 — 2026-05-09
+
+Manifest fix.
+
+### Fixed
+
+- `plugin.json` — `author` was a string (`"Estevan Hernandez <…>"`); the Claude Code marketplace schema requires the object form. Switched to `{"name": "626Labs LLC", "url": "…"}` to match every other plugin in the ecosystem and to keep personal email out of the published manifest. v0.1.0 installs failed validation; v0.1.1 resolves cleanly.
+- Added a canary `.claude-plugin/marketplace.json` at the solo repo root so the canary install path (`/plugin install vibe-taker@estevanhernandez-stack-ed/vibe-taker`) advertised in the README actually resolves.
+- Normalized keywords + homepage URL to match the rest of the ecosystem.
+
 ## v0.1.0 — 2026-05-08
 
 First release. **Take it with you.**
