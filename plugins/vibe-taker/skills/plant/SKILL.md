@@ -282,7 +282,7 @@ PRD Plant story 5. Pattern #13 (ecosystem-aware composition).
 
 After a successful apply (Phase 8.4):
 
-1. **Check** whether `mcp__626Labs__manage_decisions` is in the agent's runtime tool list.
+1. **Check** whether a decision-log MCP is in the agent's runtime tool list — auto-detects the recognized 626Labs dashboard (`mcp__626labs-cloud__manage_decisions`). It's optional; never required.
 2. **If absent** — succeed silently. No retry, no error, no warning. The plant is already a success.
 3. **If present** — call:
 
@@ -299,7 +299,7 @@ After a successful apply (Phase 8.4):
      projectId: <bound-project-id-if-current-repo-bound-else-null>
    ```
 
-   - To get `bound-project-id`: read `git config --get remote.origin.url` from cwd; if a remote exists, optionally call `mcp__626Labs__manage_projects` with action `findByRepo` to get the project ID. If no remote or no match, set `projectId: null` and tag the decision with the cwd basename.
+   - To get `bound-project-id`: read `git config --get remote.origin.url` from cwd; if a remote exists and the detected MCP exposes it, optionally call `mcp__626labs-cloud__manage_projects` with action `findByRepo` to get the project ID. If no remote, no match, or no such tool, set `projectId: null` and tag the decision with the cwd basename.
    - **Don't fail the plant on dashboard errors.** If the call returns an error, print one line: `(dashboard log failed; plant succeeded)` and exit class-0 anyway.
 
 ## Phase 10 — success summary

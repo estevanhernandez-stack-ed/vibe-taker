@@ -63,7 +63,7 @@ Schemas live in [`./schemas/`](./schemas/); artifact templates live in [`./templ
 
 Two skill folders ship as documented placeholders in v1: [`skills/session-logger/`](../session-logger/SKILL.md) and [`skills/friction-logger/`](../friction-logger/SKILL.md). Each documents its contract and reserved data path. **Command skills do not invoke them in v1.** Reserved for v2 lighting-up; reserved on disk in v1 so v2 doesn't need a directory restructure.
 
-Pattern #13 (ecosystem-aware composition) **is** implemented in v1 — the plant skill checks for `mcp__626Labs__manage_decisions` at the end of a successful plant, calls it if present, succeeds silently if absent.
+Pattern #13 (ecosystem-aware composition) **is** implemented in v1 — the plant skill checks for an optional decision-log MCP (auto-detects the recognized 626Labs dashboard, `mcp__626labs-cloud__manage_decisions`) at the end of a successful plant, calls it if present, succeeds silently if absent. The MCP is never required.
 
 ## Loading order
 
