@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0",
+  "name": "config-loader",
+  "version": "v1",
+  "language": "python",
+  "framework": null,
+  "interface_kind": "library",
+  "inputs": [],
+  "outputs": [],
+  "dependencies": [],
+  "env_vars": [],
+  "source_repo": "/Users/este/projects/thing",
+  "source_path": "src/config.py",
+  "captured_at": "2026-04-22T00:00:00Z",
+  "entry_points": ["config.py"]
+}
