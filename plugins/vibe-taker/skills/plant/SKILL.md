@@ -276,13 +276,13 @@ On `y`:
 
 Per-file `.tmp` + `mv` makes each individual write atomic on POSIX (and on Windows with NTFS for same-volume moves). The whole-plant operation is **not** atomic — it's a sequence of per-file atomic moves. If something dies between file 3 and file 4, files 1-3 are landed and 4-N aren't. This is acceptable in v1: the `[y/N]` confirmation already gives the user the full picture; mid-flight crashes are vanishingly rare for filesystem ops; and a partial plant is still partial *valid* code (each file individually is consistent).
 
-## Phase 9 — dashboard decision log (opt-in / fail-silent)
+## Phase 9 — decision-log append (opt-in / fail-silent)
 
 PRD Plant story 5. Pattern #13 (ecosystem-aware composition).
 
 After a successful apply (Phase 8.4):
 
-1. **Check** whether a decision-log MCP is in the agent's runtime tool list — auto-detects the recognized 626Labs dashboard (`mcp__626labs-cloud__manage_decisions`). It's optional; never required.
+1. **Check** whether a decision-log MCP is in the agent's runtime tool list — bring your own; the 626Labs dashboard is auto-detected as `mcp__626labs-cloud__manage_decisions` when present. It's optional; never required.
 2. **If absent** — succeed silently. No retry, no error, no warning. The plant is already a success.
 3. **If present** — call:
 
@@ -299,8 +299,8 @@ After a successful apply (Phase 8.4):
      projectId: <bound-project-id-if-current-repo-bound-else-null>
    ```
 
-   - To get `bound-project-id`: read `git config --get remote.origin.url` from cwd; if a remote exists and the detected MCP exposes it, optionally call `mcp__626labs-cloud__manage_projects` with action `findByRepo` to get the project ID. If no remote, no match, or no such tool, set `projectId: null` and tag the decision with the cwd basename.
-   - **Don't fail the plant on dashboard errors.** If the call returns an error, print one line: `(dashboard log failed; plant succeeded)` and exit class-0 anyway.
+   - To get `bound-project-id`: read `git config --get remote.origin.url` from cwd; if a remote exists and the detected MCP exposes it, optionally call `mcp__626labs-cloud__manage_projects` with action `findByRepo` to get the project ID. Repo-bind is a separate bridge concern — outside the decision-log contract per the family convention — so it follows the same optional/auto-detect framing but never gates the log. If no remote, no match, or no such tool, set `projectId: null` and tag the decision with the cwd basename.
+   - **Don't fail the plant on decision-log errors.** If the call returns an error, print one line: `(decision-log failed; plant succeeded)` and exit class-0 anyway.
 
 ## Phase 10 — success summary
 
@@ -317,7 +317,7 @@ Class-0 outcome after a `y` on the diff.
 
   Source: <contract.source_repo> (<contract.source_path>)
 
-  <(dashboard log succeeded | plant logged to 626Labs Dashboard | dashboard not connected)>
+  <(decision logged | logged to your decision-log MCP | decision-log MCP not connected)>
 ```
 
 Exit class-0.
