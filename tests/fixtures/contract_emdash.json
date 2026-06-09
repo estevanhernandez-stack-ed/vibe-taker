@@ -1,0 +1,25 @@
+{
+  "schema_version": "1.0",
+  "name": "relay-bot",
+  "version": "v1",
+  "language": "typescript",
+  "framework": "express",
+  "interface_kind": "service",
+  "inputs": [
+    { "name": "payload", "type": "string", "required": true, "description": "Incoming webhook body — JSON-encoded, UTF-8" }
+  ],
+  "outputs": [
+    { "name": "status", "type": "int", "description": "HTTP status — 200 “ok”, 4xx on bad HMAC" }
+  ],
+  "dependencies": ["express@^4.18"],
+  "env_vars": [
+    { "name": "SLACK_SIGNING_SECRET", "load_bearing": true, "description": "HMAC secret — don’t commit it" }
+  ],
+  "source_repo": "https://github.com/626labs/relay",
+  "source_path": "services/relay/",
+  "captured_at": "2026-04-15T12:00:00Z",
+  "entry_points": ["index.ts"],
+  "tags": ["slack", "webhook", "señal"],
+  "summary": "Relay Slack events → a webhook with HMAC validation — “fire-and-forget”, a façade over the bus. 中文测试.",
+  "notes_completeness": { "substantive_count": 4, "interview_fired": true }
+}

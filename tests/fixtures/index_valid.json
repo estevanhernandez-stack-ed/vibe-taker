@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0",
+  "bundles": [
+    {
+      "name": "bg-remover",
+      "latest_version": "v2",
+      "versions": [
+        { "version": "v1", "captured_at": "2026-04-30T14:22:01Z", "source_repo": "https://github.com/626labs/hub", "source_path": "tools/bg-remove/" },
+        { "version": "v2", "captured_at": "2026-05-07T09:11:43Z", "source_repo": "https://github.com/626labs/hub", "source_path": "tools/bg-remove/" }
+      ],
+      "tags": ["cli", "image", "ai"],
+      "summary": "AI-powered CLI background remover — returns a transparent-bg PNG.",
+      "language": "python",
+      "framework": "cli-argparse"
+    }
+  ]
+}

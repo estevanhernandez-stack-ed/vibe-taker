@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0",
+  "bundles": [
+    {
+      "name": "bg-remover",
+      "latest_version": "v2",
+      "versions": [
+        { "version": "v1", "captured_at": "2026-04-30T14:22:01Z", "source_repo": "https://github.com/626labs/hub", "source_path": "tools/bg-remove/" },
+        { "version": "v2", "captured_at": "2026-05-07T09:11:43Z", "source_repo": "https://github.com/626labs/hub", "source_path": "tools/bg-remove/" }
+      ],
+      "tags": ["cli", "image", "ai"],
+      "summary": "AI-powered CLI background remover — café edition →.",
+      "language": "python",
+      "framework": "cli-argparse"
+    },
+    {
+      "name": "config-loader",
+      "latest_version": "v1",
+      "versions": [
+        { "version": "v1", "captured_at": "2026-04-22T08:00:00Z", "source_repo": "/Users/este/projects/thing", "source_path": "src/config.py" }
+      ],
+      "summary": "Loads YAML config with environment overlays.",
+      "language": "python",
+      "framework": null
+    },
+    {
+      "name": "slack-relay",
+      "latest_version": "v1",
+      "versions": [
+        { "version": "v1", "captured_at": "2026-04-15T12:00:00Z", "source_repo": "https://github.com/626labs/relay", "source_path": "services/relay/" }
+      ],
+      "tags": ["slack", "webhook"],
+      "summary": "Relay incoming Slack events to a webhook with HMAC validation.",
+      "language": "typescript",
+      "framework": "express"
+    }
+  ]
+}

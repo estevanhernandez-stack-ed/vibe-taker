@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0",
+  "name": "bg-remover",
+  "version": "v2",
+  "language": "python",
+  "framework": "cli-argparse",
+  "interface_kind": "cli",
+  "inputs": [
+    { "name": "image_path", "type": "path", "required": true, "description": "Path to source image — must exist on disk" },
+    { "name": "mode", "type": "enum:fast|accurate", "required": false, "description": "Quality mode" }
+  ],
+  "outputs": [
+    { "name": "transparent_image", "type": "path", "description": "Output path for transparent-bg image" }
+  ],
+  "dependencies": ["pillow>=10.0", "requests>=2.28"],
+  "env_vars": [
+    { "name": "OPENAI_API_KEY", "load_bearing": true, "description": "API key for the bg-removal model" }
+  ],
+  "source_repo": "https://github.com/626labs/hub",
+  "source_path": "tools/bg-remove/",
+  "captured_at": "2026-05-07T09:11:43Z",
+  "entry_points": ["bg_remove.py"],
+  "tags": ["cli", "image", "ai"],
+  "summary": "AI-powered CLI background remover — takes an image path, returns a transparent-bg café-ready PNG → done.",
+  "notes_completeness": { "substantive_count": 3, "interview_fired": false }
+}
