@@ -1,6 +1,6 @@
 ---
 name: vibe-taker-capture
-description: Capture a feature out of the current repo as a portable bundle on the cross-repo shelf. Reads source, snapshots reference code, extracts architecture and contract, derives intent autonomously, fires the interview gate only when WHY can't be derived.
+description: Use when the user wants a feature from the current repo available in another project — phrasings like "I want this in my other app", "save this feature for later", "capture this", "this would be great in X", "grab this before I refactor it away". Captures it as a portable bundle on the cross-repo shelf — reads live source, snapshots reference code, extracts architecture and contract, derives intent autonomously (interview gate only when WHY can't be derived). Not for whole-repo backups or same-repo copy-paste; it exists for features crossing repo boundaries.
 ---
 
 # vibe-taker — capture skill
