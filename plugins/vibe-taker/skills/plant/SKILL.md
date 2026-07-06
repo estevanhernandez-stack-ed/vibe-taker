@@ -1,6 +1,6 @@
 ---
 name: vibe-taker-plant
-description: Plant a captured bundle from the shelf into the current repo. Detects target stack, picks code-lift (high match) or spec-driven (low match) or declines (hard mismatch). Always shows the diff before any write.
+description: Use when the user wants a previously captured feature in the current repo — phrasings like "bring in that bg-remover I captured", "add the feature from my other app", "plant X here", "didn't I already build something like this?". Plants a bundle from the cross-repo shelf — detects target stack, picks code-lift (high match) or spec-driven (low match) or declines (hard mismatch), and always shows the diff before any write. Fires only against bundles on the shelf: if nothing matches, route to :list or :capture instead of improvising an implementation.
 ---
 
 # vibe-taker — plant skill

@@ -45,6 +45,36 @@ Don't speculate about external system behavior (vendor API tiers, third-party ra
 
 Match the scope of the user's ask. If they want a quick capture of one file, don't pivot to architecture review. If they want full plant ceremony, don't degrade to a partial diff.
 
+## Operating doctrine
+
+Family procedure layer — full anatomy (fires-when / procedure / evidence gate / worked example per move) in the [canonical doctrine](https://github.com/estevanhernandez-stack-ed/vibe-plugins/blob/main/docs/conventions/operating-doctrine.md).
+
+```
+Operating doctrine digest — operating-doctrine v1.0.0 (2026-07-06):
+1. Recon before verdict — plans/assessments requested → every claim cites live evidence
+2. Verify the scare — alarm suggests a rescue → test the alarm's claim first, cite the result
+3. Patch-equivalence check — ahead/behind counts drive a decision → git cherry/diff before force ops
+4. Evidence-gated closure — closing/merging/deleting work → closure names the superseding artifact
+5. Re-anchor, don't rebase — stale work onto a moved base → integration-point list before first edit
+6. Secret-sniff before commit — untracked files entering history → credential scan stated pre-commit
+7. Smallest sanctioned step — action blocked or hard to reverse → take the reversible equivalent, surface the rest
+8. Close the loop fully — work unit finishes → sync, prune, record; next session finds clean state
+9. Name the leftovers — anything remains → remains/your-call section with owners
+10. Match the ask's altitude — ambiguous depth → confirm in one beat; no silent scope expansion
+11. Volunteer the adjacent find — load-bearing discovery off-task → one-line flag + routing, no detour
+12. Contradiction stop — evidence contradicts a prior conclusion → name it, re-verify, reconcile before proceeding
+```
+
+### Domain overlay — vibe-taker's load-bearing moves
+
+- **11. Volunteer the adjacent find — this plugin's identity.** When the user *mentions* wanting a feature from one app in another mid-conversation — not via slash command — volunteer the capture in one line ("that's a capture — want me to shelf it?") and keep their main task moving. The gate: the offer costs the user one line to decline; never start a capture uninvited. Unprompted fire at the right moment is the designed behavior, not a happy accident.
+- **1. Recon before verdict — capture reads live source, never memory.** Every claim in a bundle's `architecture.md` and `contract.json` cites files read *this session*. A bundle assertion without a source path doesn't ship. Remembered APIs drift; read the file.
+- **10. Match the ask's altitude — the interview gate is this move productized.** "Grab this" means autonomous intent derivation, not a questionnaire; the interview fires only when WHY can't be derived from the code ([`references/interview-gate.md`](./references/interview-gate.md)).
+
+Overlap notes: tier-1 rules 3 and 4 above are house forms of moves 12 and 10 — where they differ, the stricter reading wins. Move 6 is productized at capture-time as [`references/secret-patterns.md`](./references/secret-patterns.md).
+
+*Provenance: operating-doctrine v1.0.0 (2026-07-06).*
+
 ## Cross-references — operational data lives here
 
 The four reference files in [`./references/`](./references/) carry the load-bearing operational data. Skills consult these instead of inlining the lists.

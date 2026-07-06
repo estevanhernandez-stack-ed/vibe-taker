@@ -1,6 +1,6 @@
 ---
 name: vibe-taker-list
-description: List bundles on the cross-repo shelf with one-line summaries. Supports --search (case-insensitive substring across name/summary/tags/source-repo/language) and --sort name|lang. Flags near-duplicates so the shelf doesn't sprawl.
+description: Use when the user asks what's on their cross-repo shelf — "what have I captured", "do I have a bundle for X", "show my library" — or when a plant request is ambiguous about which bundle it means. Lists bundles with one-line summaries; supports --search (case-insensitive across name/summary/tags/source-repo/language) and --sort name|lang; flags near-duplicates so the shelf doesn't sprawl. Not a general file finder — it reads only the ~/.vibe-taker/library/ shelf.
 ---
 
 # vibe-taker — list skill
