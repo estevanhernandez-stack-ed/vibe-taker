@@ -1,6 +1,6 @@
 {
   "name": "vibe-taker",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Take it with you. Capture a feature out of one repo as a portable bundle; plant it into another and adapt to the destination stack.",
   "author": {
     "name": "626Labs LLC",
