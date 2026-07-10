@@ -1,4 +1,5 @@
 <p align="center">
+  <img src="assets/brand/icon.svg" width="120" alt="vibe-taker mark">
   <img alt="Vibe Taker — capture a feature out of one repo, plant it in another, adapted to the destination stack" src="https://626labs.dev/assets/brand/plugins/vibe-taker-banner-1500x500.png" />
 </p>
 
